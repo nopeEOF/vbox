@@ -25,16 +25,12 @@ def restapi(
     pass
 
 
-# @app.command(help="")
-# def cli():
-#     pass
-
-
 @app.command(help="")
 def telbot():
     pass
 
 
 if __name__ == '__main__':
-    v2ray = V2Ray(host="127.0.0.1", port=8080)
+    v2ray = V2Ray()
+    v2ray.v2ray_connect(host="127.0.0.1", port=8080)
     app()
