@@ -1,31 +1,50 @@
 from v2client import utils
 from v2client import V2RayClient
 from v2client import enum as v2types
+from utils.singlton import Singleton
 
-client = V2RayClient("SERVER_IP_ADDRESS", 8080)
-usage = client.get_user_usage("email@gmail.com")
-print(f"Download Usage: {usage.download} & Upload Usage: {usage.upload} (in bytes)")
 
-# ADD VLESS USER
-client.add_user(
-    inbound_tag="inbound_tag",
-    proxy_type=v2types.ProxyTypes.VLESS,
-    email="email@gmail.com",
-    level=0,
-    flow=v2types.VLESSFlowTypes.XTLS_RPRX_ORIGIN,  # Only for VLESS
-    encryption=v2types.VLESSEncryptionTypes.NONE,  # Only for VLESS
-    user_id=utils.random_uuid()
-)
+class VMessUser:
+    def __init__(self, email: str, inbound_tag: str):
+        self.inbound_tag = inbound_tag
+        self.email = email
+        self.proxy_type = v2types.ProxyTypes.VMESS,
+        self.level = 0,
+        self.security = v2types.VMessSecurityTypes.AUTO,
+        self.user_id = utils.random_uuid()
 
-# ADD VMESS USER
-client.add_user(
-    inbound_tag="inbound_tag",
-    proxy_type=v2types.ProxyTypes.VMESS,
-    email="email@email.com",
-    level=0,
-    security=v2types.VMessSecurityTypes.AES128_GCM,  # Only for VMESS
-    user_id=utils.random_uuid()
-)
 
-# Remove User
-client.remove_user(inbound_tag="inbound", email="email@gmail.com")
+class V2Ray(metaclass=Singleton):
+    def __init__(self, host: str, port: int):
+        self.host = host
+        self.port = port
+        self.client = None
+
+    def v2ray_connect(self,):
+        self.client = V2RayClient(self.host, self.port)
+
+    def add_vmess_user(self, vmess_user: VMessUser):
+        self.client.add_user(
+            inbound_tag=vmess_user.inbound_tag,
+            proxy_type=vmess_user.proxy_type,
+            email=vmess_user.email,
+            level=vmess_user.level,
+            security=vmess_user.security,
+            user_id=vmess_user.user_id
+        )
+
+    def remove_vmess_user(self, email: str, inbound_tag: str):
+        self.client.remove_user(inbound_tag=inbound_tag, email=email)
+
+    def traffic_usage(self, email: str):
+        return self.client.get_user_usage(email=email)
+
+    def reset_user_traffic(self, email: str):
+        self.client.get_user_usage(email=email, reset=True)
+        return True
+
+    def traffic_all_usage(self, inbound_tag: str):
+        pass
+
+    def traffic_all_user(self, inbound_tag: str):
+        pass
