@@ -1,7 +1,10 @@
 from typing import Optional
+from cli.main import cli_app
+from utils.main import V2Ray
 import typer
 
 app = typer.Typer()
+app.add_typer(cli_app, name="cli")
 
 
 @app.command(help="")
@@ -22,11 +25,16 @@ def restapi(
     pass
 
 
-@app.command(help="")
-def cli():
-    pass
+# @app.command(help="")
+# def cli():
+#     pass
 
 
 @app.command(help="")
 def telbot():
     pass
+
+
+if __name__ == '__main__':
+    v2ray = V2Ray(host="127.0.0.1", port=8080)
+    app()
