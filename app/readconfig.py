@@ -7,7 +7,7 @@ FILENAME = "./config.yaml"
 
 def get_config():
     if file_exist(FILENAME):
-        with open('config.yml', 'r') as file:
+        with open(FILENAME, 'r') as file:
             return yaml.safe_load(file)
     else:
         print("Can not find config file: " + FILENAME)
