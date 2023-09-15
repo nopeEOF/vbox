@@ -15,6 +15,6 @@ def get_config():
 
 
 def file_exist(filename: str) -> bool:
-    if os.path.exists(filename):
+    if os.path.isfile(filename):
         return True
     return False
