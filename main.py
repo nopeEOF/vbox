@@ -1,6 +1,5 @@
 from typing import Optional
-from cli.main import cli_app
-from utils.main import V2Ray
+from app.cli.cli_main import cli_app
 import typer
 
 app = typer.Typer()
@@ -31,6 +30,4 @@ def telbot():
 
 
 if __name__ == '__main__':
-    v2ray = V2Ray()
-    v2ray.v2ray_connect(host="127.0.0.1", port=8080)
     app()

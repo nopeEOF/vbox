@@ -1,10 +1,11 @@
 from typing import Optional
-from utils.main import VMessUser, V2Ray
+from app.v2ray.v2ray import VMessUser, MyV2RayClient
 from enum import Enum
+from app import readconfig
 import typer
 
 cli_app = typer.Typer()
-v2ray = V2Ray()
+v2ray = MyV2RayClient(client="v2fly")
 
 
 class VMessSecurityTypes(str, Enum):
@@ -45,16 +46,26 @@ def add_user(
         )
 ):
     user = VMessUser(email=email, security=security, level=level, inbound_tag=inbound_tag)
-    v2ray.add_vmess_user(vmess_user=user)
+    config = readconfig.get_config()
+    v2ray_client = v2ray.connect(host=config["v2rayapi"]["host"], port=config["v2rayapi"]["port"])
+    v2ray_client.add_vmess_user(vmess_user=user)
 
 
 @cli_app.command(help='')
 def user_usage(
         email: str = typer.Option(
-            str,
+            ...,
             "-e",
             "--email",
             help=""
+        ),
+        reset: Optional[bool] = typer.Option(
+            False,
+            "-r",
+            "--reset",
+            help=""
         )
 ):
-    v2ray.traffic_usage(email=email)
+    config = readconfig.get_config()
+    v2ray_client = v2ray.connect(host=config["v2rayapi"]["host"], port=config["v2rayapi"]["port"])
+    v2ray_client.user_usage(email=email, reset=reset)
