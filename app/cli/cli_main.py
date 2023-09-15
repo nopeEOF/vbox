@@ -68,4 +68,7 @@ def user_usage(
 ):
     config = readconfig.get_config()
     v2ray_client = v2ray.connect(host=config["v2rayapi"]["host"], port=config["v2rayapi"]["port"])
-    v2ray_client.user_usage(email=email, reset=reset)
+    usage = v2ray_client.user_usage(email=email, reset=reset)
+    print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G".format(
+        usage.download / 1024 ** 3, usage.upload / 1024 ** 3)
+    )
