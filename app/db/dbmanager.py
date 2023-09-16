@@ -117,7 +117,7 @@ async def db_update_user_usage(email: str, download: int, upload: int) -> mystat
             ).where(Users.email == user.email)
             await session.execute(query)
             await session.commit()
-            print(f"download: {download}. upload: {upload}. user: {user.email} / {user.download} / {user.upload}")
+            # print(f"download: {download}. upload: {upload}. user: {user.email} / {user.download} / {user.upload}")
             return mystats.Detail(flag=True, status=user)
     else:
         return mystats.Detail(flag=False, status="user not found in db")
