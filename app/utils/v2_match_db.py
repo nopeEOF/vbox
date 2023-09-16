@@ -114,7 +114,7 @@ async def user_usage(email: str):
 
 
 async def users_usage():
-    v2_users_usage = v2ray.v2_users_usage(pattern="user")
+    v2_users_usage = v2ray.v2_users_usage(pattern="user", reset=True)
     users_dict = v2call.query_response_user_to_obj(v2_users_usage)
 
     for key in users_dict.keys():
@@ -165,3 +165,10 @@ async def check_activity_users():
                     await active_user(email=user.email)
                     print("checking active user")
 
+
+async def set_user_usage(email: str,  download: int = 0, upload: int = 0, traffic: int = 0):
+    db_flag = await dbmanager.db_set_user_usage(email=email, upload=upload, download=download, traffic=traffic)
+    if db_flag.flag:
+        print(db_flag.status)
+    else:
+        print(db_flag.status)

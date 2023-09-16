@@ -82,5 +82,30 @@ async def delete_user(
 
 
 @cli_app.command(help="")
-async def test():
-    await v2_match_db.users_usage()
+async def set_user_usage(
+        email: str = typer.Option(
+            ...,
+            "-e",
+            "--email",
+            help=""
+        ),
+        upload: Optional[int] = typer.Option(
+            0,
+            "--upload",
+            "-u",
+            help=""
+        ),
+        download: Optional[int] = typer.Option(
+            0,
+            "--download",
+            "-d",
+            help=""
+        ),
+        traffic: Optional[int] = typer.Option(
+            0,
+            "--traffic",
+            "-t",
+            help=""
+        ),
+):
+    await v2_match_db.reset_user_usage(email=email, upload=upload, download=download, traffic=traffic)

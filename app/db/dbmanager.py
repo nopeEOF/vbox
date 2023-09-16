@@ -122,6 +122,24 @@ async def db_update_user_usage(email: str, download: int, upload: int) -> mystat
         return mystats.Detail(flag=False, status="user not found in db")
 
 
+async def db_set_user_usage(email: str, upload: int = 0, download: int = 0, traffic: int = 0):
+    if user := await get_user(email=email):
+        async_session: AsyncSession = await get_session()
+        async with async_session.__call__() as session:
+            query = update(Users).values(
+                {
+                    "download": download,
+                    "upload": upload,
+                    "traffic": traffic
+                }
+            ).where(Users.email == user.email)
+            await session.execute(query)
+            await session.commit()
+            return mystats.Detail(flag=True, status="traffic success set")
+    else:
+        return mystats.Detail(flag=False, status="user not found in db")
+
+
 async def db_update_users_usage(users: List[dict]):
     # not working
     async_session: AsyncSession = await get_session()
