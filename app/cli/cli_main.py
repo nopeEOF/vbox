@@ -108,4 +108,4 @@ async def set_user_usage(
             help=""
         ),
 ):
-    await v2_match_db.reset_user_usage(email=email, upload=upload, download=download, traffic=traffic)
+    await v2_match_db.set_user_usage(email=email, upload=upload, download=download, traffic=traffic)
