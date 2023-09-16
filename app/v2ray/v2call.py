@@ -3,16 +3,24 @@ from v2client import V2RayClient
 from v2client.enum import VMessSecurityTypes, ProxyTypes
 from v2client.v2ray import stats
 from app.singlton import Singleton
+from app.readconfig import get_config
 
 
 class VMessUser:
     def __init__(
-            self, email: str, inbound_tag: str, level: int = 0, security: VMessSecurityTypes = VMessSecurityTypes.AUTO
+            self,
+            email: str,
+            inbound_tag: str = get_config()["v2rayapi"]["inbound_tag"],
+            level: int = 0,
+            security: VMessSecurityTypes = VMessSecurityTypes.AUTO,
+            uuid: str = utils.random_uuid()
     ):
         self.inbound_tag = inbound_tag
         self.email = email
         self.level = level
         self.security = security
+        self.proxyType = ProxyTypes.VMESS
+        self.userUuid = uuid
 
 
 class V2Ray:
@@ -20,22 +28,22 @@ class V2Ray:
     def __init__(self):
         pass
 
-    def add_vmess_user(self, *args, **kwargs):
+    def v2_add_vmess_user(self, *args, **kwargs):
         pass
 
-    def add_vless_user(self, *args, **kwargs):
+    def v2_add_vless_user(self, *args, **kwargs):
         pass
 
-    def remove_user(self, *args, **kwargs):
+    def v2_remove_user(self, *args, **kwargs):
         pass
 
-    def users_usage(self, *args, **kwargs):
+    def v2_users_usage(self, *args, **kwargs):
         pass
 
-    def user_usage(self, *args, **kwargs):
+    def v2_user_usage(self, *args, **kwargs):
         pass
 
-    def inbound_usage(self, *args, **kwargs):
+    def v2_inbound_usage(self, *args, **kwargs):
         pass
 
 
@@ -49,27 +57,24 @@ class V2Fly(V2Ray):
     def __v2ray_connect(host: str, port: int):
         return V2RayClient(host, port)
 
-    def add_vmess_user(self, vmess_user: VMessUser) -> None:
+    def v2_add_vmess_user(self, vmess_user: VMessUser) -> None:
         self.client.add_user(
             inbound_tag=vmess_user.inbound_tag,
-            proxy_type=ProxyTypes.VMESS,
+            proxy_type=vmess_user.proxyType,
             email=vmess_user.email,
             level=vmess_user.level,
             security=vmess_user.security,
-            user_id=utils.random_uuid()
+            user_id=vmess_user.userUuid
         )
 
-    def remove_user(self, email: str, inbound_tag: str) -> None:
+    def v2_remove_user(self, email: str, inbound_tag: str = get_config()["v2rayapi"]["inbound_tag"]) -> None:
         self.client.remove_user(inbound_tag=inbound_tag, email=email)
 
-    def user_usage(self, email: str, reset: bool) -> stats.UsageResponse:
+    def v2_user_usage(self, email: str, reset: bool) -> stats.UsageResponse:
         return self.client.get_user_usage(email=email, reset=reset)
-        # print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G".format(
-        #     usage.download / 1024 ** 3, usage.upload / 1024 ** 3)
-        # )
 
-    def users_usage(self, inbound_tag: str):
-        print(self.client.query_stats(pattern=""))
+    def v2_users_usage(self, pattern: str = "") -> stats.QueryListResponse:
+        return self.client.query_stats(pattern=pattern)
 
 
 class XRay(V2Ray):
@@ -94,5 +99,5 @@ class MyV2RayClient(metaclass=Singleton):
         return None  # coming soon
 
     @staticmethod
-    def v2fly(host: str, port: int):
+    def v2fly(host: str, port: int) -> V2Fly:
         return V2Fly(host=host, port=port)

@@ -1,5 +1,5 @@
 from typing import Optional
-from app.v2ray.v2ray import VMessUser, MyV2RayClient
+from app.v2ray.v2call import VMessUser, MyV2RayClient
 from enum import Enum
 from app import readconfig
 import typer
@@ -48,7 +48,7 @@ def add_user(
     user = VMessUser(email=email, security=security, level=level, inbound_tag=inbound_tag)
     config = readconfig.get_config()
     v2ray_client = v2ray.connect(host=config["v2rayapi"]["host"], port=config["v2rayapi"]["port"])
-    v2ray_client.add_vmess_user(vmess_user=user)
+    v2ray_client.v2_add_vmess_user(vmess_user=user)
 
 
 @cli_app.command(help='')
@@ -68,7 +68,7 @@ def user_usage(
 ):
     config = readconfig.get_config()
     v2ray_client = v2ray.connect(host=config["v2rayapi"]["host"], port=config["v2rayapi"]["port"])
-    usage = v2ray_client.user_usage(email=email, reset=reset)
+    usage = v2ray_client.v2_user_usage(email=email, reset=reset)
     print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G".format(
         usage.download / 1024 ** 3, usage.upload / 1024 ** 3)
     )
