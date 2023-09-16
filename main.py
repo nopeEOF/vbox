@@ -2,10 +2,12 @@ from typing import Optional
 from app.cli.cli_main import cli_app
 from app.db import dbmanager
 from app.v2ray.v2call import VMessUser
+from app.cli.utyper import UTyper
+from app.service.service_main import Service
 import typer
-import asyncio
 
-app = typer.Typer()
+
+app = UTyper()
 app.add_typer(cli_app, name="cli")
 
 
@@ -32,11 +34,19 @@ def telbot():
     pass
 
 
+@app.command(help="")
+async def service(
+        first_run: Optional[bool] = typer.Option(
+            False,
+            "-f",
+            "--first-run",
+            help="first"
+        )
+):
+    service_class = Service()
+    await service_class.refresh_v2_in_db(first_run=first_run)
+
+
 if __name__ == '__main__':
-    asyncio.run(dbmanager.db_add_vmess_user(VMessUser(email="sezfxsdsr@gmail.com")))
-    # asyncio.run(a.remove_user(email="sefr@gmail.com"))
-    # asyncio.run(a.add_vmess_user(email="sedsxxvdr@gmail.com"))
-    # asyncio.run(a.update_activity(email="sefr@gmail.com", active=True))
-    a = asyncio.run(dbmanager.db_users_usage())
-    print(a)
+    app()
 

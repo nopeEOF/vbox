@@ -1,10 +1,11 @@
 from typing import Optional
 from app.v2ray.v2call import VMessUser, MyV2RayClient
 from enum import Enum
-from app import readconfig
+from app.utils import v2_match_db
+from app.cli.utyper import UTyper
 import typer
 
-cli_app = typer.Typer()
+cli_app = UTyper()
 v2ray = MyV2RayClient(client="v2fly")
 
 
@@ -18,20 +19,20 @@ class VMessSecurityTypes(str, Enum):
 
 
 @cli_app.command(help='')
-def add_user(
+async def add_user(
         email: str = typer.Option(
             ...,
             "-e",
             "--email",
             help="Email address"
         ),
-        inbound_tag: str = typer.Option(
-            ...,
-            "-i",
-            "--inbound-tag",
-            help="Inbound tag"
+        uuid: Optional[str] = typer.Option(
+            None,
+            "-u",
+            "--uuid",
+            help="uuid"
         ),
-        level: int = typer.Option(
+        level: Optional[int] = typer.Option(
             0,
             "-l",
             "--level",
@@ -45,30 +46,40 @@ def add_user(
             case_sensitive=False
         )
 ):
-    user = VMessUser(email=email, security=security, level=level, inbound_tag=inbound_tag)
-    config = readconfig.get_config()
-    v2ray_client = v2ray.connect(host=config["v2rayapi"]["host"], port=config["v2rayapi"]["port"])
-    v2ray_client.v2_add_vmess_user(vmess_user=user)
+    user = VMessUser(email=email, security=security, level=level, uuid=uuid)
+    await v2_match_db.add_vmess_user(user=user)
 
 
 @cli_app.command(help='')
-def user_usage(
+async def user_usage(
         email: str = typer.Option(
             ...,
             "-e",
             "--email",
             help=""
-        ),
-        reset: Optional[bool] = typer.Option(
-            False,
-            "-r",
-            "--reset",
+        )
+):
+    db_flag = await v2_match_db.user_usage(email=email)
+    if db_flag.flag:
+        print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G".format(
+            db_flag.status.download / 1024 ** 3, db_flag.status.upload / 1024 ** 3)
+        )
+    else:
+        print(db_flag.status)
+
+
+@cli_app.command(help="")
+async def delete_user(
+        email: str = typer.Option(
+            ...,
+            "-e",
+            "--email",
             help=""
         )
 ):
-    config = readconfig.get_config()
-    v2ray_client = v2ray.connect(host=config["v2rayapi"]["host"], port=config["v2rayapi"]["port"])
-    usage = v2ray_client.v2_user_usage(email=email, reset=reset)
-    print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G".format(
-        usage.download / 1024 ** 3, usage.upload / 1024 ** 3)
-    )
+    await v2_match_db.remove_user(email=email)
+
+
+@cli_app.command(help="")
+async def test():
+    await v2_match_db.users_usage()

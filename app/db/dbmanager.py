@@ -7,6 +7,8 @@ from app.db.tables import Users
 from collections.abc import AsyncIterator
 from sqlalchemy import select, update
 from v2client.v2ray import stats
+from app.utils import stats as mystats
+from typing import List
 
 
 async def get_user(email: str) -> Users | bool:
@@ -25,14 +27,18 @@ async def get_session():
     return await anext(async_iterator)
 
 
-async def db_add_vmess_user(user: VMessUser) -> None:
-    async_session: AsyncSession = await get_session()
-    protocol_detail = str(json.dumps(vars(user)))
-    async with async_session.__call__() as session:
-        async with session.begin():
-            session.add(Users(
-                email=user.email, uuid=user.userUuid, active=True, protocol="vmess", protocol_detail=protocol_detail
-            ))
+async def db_add_vmess_user(user: VMessUser) -> mystats.Detail:
+    if not await get_user(email=user.email):
+        async_session: AsyncSession = await get_session()
+        protocol_detail = str(json.dumps(vars(user)))
+        async with async_session.__call__() as session:
+            async with session.begin():
+                session.add(Users(
+                    email=user.email, uuid=user.userUuid, active=True, protocol="vmess", protocol_detail=protocol_detail
+                ))
+        return mystats.Detail(flag=True, status="user added in db")
+    else:
+        return mystats.Detail(flag=False, status="user not found in db")
 
 
 async def db_add_vless_user(email: str):
@@ -43,21 +49,21 @@ async def db_add_trojan_user():
     pass
 
 
-async def db_remove_user(email: str) -> bool:
-    async_session: AsyncSession = await get_session()
-    async with async_session.__call__() as session:
-        if user := await get_user(email=email):
+async def db_remove_user(email: str) -> mystats.Detail:
+    if user := await get_user(email=email):
+        async_session: AsyncSession = await get_session()
+        async with async_session.__call__() as session:
             await session.delete(user)
             await session.commit()
-            return True
-        else:
-            return False
+            return mystats.Detail(flag=True, status="user removed in db")
+    else:
+        return mystats.Detail(flag=False, status="user not found in db")
 
 
-async def db_update_activity(email: str, active: bool) -> Users | bool:
-    async_session: AsyncSession = await get_session()
-    async with async_session.__call__() as session:
-        if user := await get_user(email=email):
+async def db_update_activity(email: str, active: bool) -> mystats.Detail:
+    if user := await get_user(email=email):
+        async_session: AsyncSession = await get_session()
+        async with async_session.__call__() as session:
             user.active = active
             # user_dict = vars(user)
             # user_dict.pop("_sa_instance_state")
@@ -65,19 +71,19 @@ async def db_update_activity(email: str, active: bool) -> Users | bool:
             query = update(Users).values({"active": active}).where(Users.id == user.id)
             await session.execute(query)
             await session.commit()
-            return user
-        else:
-            return False
-
-
-async def db_user_usage(email: str) -> stats.UsageResponse | bool:
-    if user := await get_user(email=email):
-        return stats.UsageResponse(user.download, user.upload)
+            return mystats.Detail(flag=True, status=user)
     else:
-        return False
+        return mystats.Detail(flag=False, status="user not found in db")
 
 
-async def db_users_usage() -> list | bool:
+async def db_user_usage(email: str) -> mystats.Detail:
+    if user := await get_user(email=email):
+        return mystats.Detail(flag=True, status=stats.UsageResponse(user.download, user.upload))
+    else:
+        return mystats.Detail(flag=False, status="user not found in db")
+
+
+async def db_users_usage() -> mystats.Detail:
     async_session: AsyncSession = await get_session()
     async with async_session.__call__() as session:
         query = select(Users).order_by(Users.id)
@@ -86,11 +92,52 @@ async def db_users_usage() -> list | bool:
             list_user_usage = list()
             for user in users:
                 list_user_usage.append(
-                    UsersUsage(email=user.email, upload=float(user.upload), download=float(user.download))
+                    UsersUsage(email=user.email, upload=int(user.upload), download=int(user.download))
                 )
-            return list_user_usage
+            return mystats.Detail(flag=True, status=list_user_usage)
         else:
-            return False
+            return mystats.Detail(flag=False, status="user not found in db")
+
+
+async def db_update_user_usage(email: str, download: int, upload: int) -> mystats.Detail:
+    if user := await get_user(email=email):
+        async_session: AsyncSession = await get_session()
+        async with async_session.__call__() as session:
+            user.download += download
+            user.upload += upload
+            query = update(Users).values(
+                {
+                    "download": user.download,
+                    "upload": user.upload
+                }
+            ).where(Users.email == user.email)
+            await session.execute(query)
+            await session.commit()
+            return mystats.Detail(flag=True, status=user)
+    else:
+        return mystats.Detail(flag=False, status="user not found in db")
+
+
+async def db_update_users_usage(users: List[dict]):
+    # not working
+    async_session: AsyncSession = await get_session()
+    async with async_session.__call__() as session:
+        await session.execute(
+            update(Users),
+            [{"id": 1, "download": Users.__table__.c.download + 1, "upload": +43984}]
+        )
+        await session.commit()
+
+
+async def get_all_users() -> mystats.Detail:
+    async_session: AsyncSession = await get_session()
+    async with async_session.__call__() as session:
+        query = select(Users)
+        result = await session.execute(query)
+        if users := result.scalars().all():
+            return mystats.Detail(flag=True, status=users)
+        else:
+            return mystats.Detail(flag=False, status="users list is empty from db")
 
 
 def db_traffic_all():

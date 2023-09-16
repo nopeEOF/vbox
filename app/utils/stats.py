@@ -6,3 +6,9 @@ class UsersUsage:
     email: str
     upload: float
     download: float
+
+
+@dataclass
+class Detail:
+    flag: bool
+    status: any
