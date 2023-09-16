@@ -26,7 +26,7 @@ class Users(Base):
     protocol_detail: Mapped[str] = mapped_column(nullable=False)
     download: Mapped[int] = mapped_column(default=0)
     upload: Mapped[int] = mapped_column(default=0)
-    traffic: Mapped[int] = mapped_column(default=0)
+    traffic: Mapped[int] = mapped_column(default=-1)
     tel_costumer_id: Mapped[int] = mapped_column(default=None, nullable=True)
     active: Mapped[bool] = mapped_column(default=True, nullable=False)
     created: Mapped[datetime.datetime] = mapped_column(server_default=func.now())

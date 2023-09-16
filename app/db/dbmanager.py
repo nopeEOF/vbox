@@ -34,7 +34,11 @@ async def db_add_vmess_user(user: VMessUser) -> mystats.Detail:
         async with async_session.__call__() as session:
             async with session.begin():
                 session.add(Users(
-                    email=user.email, uuid=user.userUuid, active=True, protocol="vmess", protocol_detail=protocol_detail
+                    email=user.email,
+                    uuid=user.userUuid,
+                    active=True,
+                    protocol="vmess",
+                    protocol_detail=protocol_detail
                 ))
         return mystats.Detail(flag=True, status="user added in db")
     else:
