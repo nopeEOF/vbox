@@ -60,12 +60,13 @@ async def user_usage(
         )
 ):
     db_flag = await v2_match_db.user_usage(email=email)
-    if db_flag.flag:
-        print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G".format(
-            db_flag.status.download / 1024 ** 3, db_flag.status.upload / 1024 ** 3)
-        )
-    else:
-        print(db_flag.status)
+    if db_flag:
+        if db_flag.flag:
+            print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G".format(
+                db_flag.status.download / 1024 ** 3, db_flag.status.upload / 1024 ** 3)
+            )
+        else:
+            print(db_flag.status)
 
 
 @cli_app.command(help="")
