@@ -1,7 +1,9 @@
+import datetime
 from typing import Optional
-from app.v2ray.v2call import VMessUser, MyV2RayClient
+from app.v2ray.v2call import MyV2RayClient
 from enum import Enum
 from app.utils import v2_match_db
+from app.utils import stats as mystats
 from app.cli.utyper import UTyper
 import typer
 
@@ -19,7 +21,7 @@ class VMessSecurityTypes(str, Enum):
 
 
 @cli_app.command(help='')
-async def add_user(
+async def add_vmess_user(
         email: str = typer.Option(
             ...,
             "-e",
@@ -44,9 +46,29 @@ async def add_user(
             "--security",
             help="Security",
             case_sensitive=False
+        ),
+        expire_date: datetime.datetime = typer.Option(
+            ...,
+            "-ed",
+            "--expire-date",
+            help="set expire date from days"
+        ),
+        active: Optional[bool] = typer.Option(
+            True,
+            "-a",
+            "--active",
+            help="active user"
+        ),
+        traffic: int = typer.Option(
+            ...,
+            "-t",
+            "--traffic",
+            help="set traffic usage allowed. use GIGByte"
         )
 ):
-    user = VMessUser(email=email, security=security, level=level, uuid=uuid)
+    traffic = traffic * (1024 ** 3)
+    v2user = mystats.VMessUser(email=email, security=security, level=level, uuid=uuid)
+    user = mystats.User(expireDate=expire_date, active=active, traffic=traffic, v2user=v2user, protocol="vmess")
     await v2_match_db.add_vmess_user(user=user)
 
 

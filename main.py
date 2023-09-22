@@ -1,7 +1,5 @@
 from typing import Optional
 from app.cli.cli_main import cli_app
-from app.db import dbmanager
-from app.v2ray.v2call import VMessUser
 from app.cli.utyper import UTyper
 from app.service.service_main import Service
 import typer

@@ -1,7 +1,6 @@
 import json
 from app.utils.stats import UsersUsage
 from app.db import database
-from app.v2ray.v2call import VMessUser
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.tables import Users
 from collections.abc import AsyncIterator
@@ -27,17 +26,19 @@ async def get_session():
     return await anext(async_iterator)
 
 
-async def db_add_vmess_user(user: VMessUser) -> mystats.Detail:
-    if not await get_user(email=user.email):
+async def db_add_vmess_user(user: mystats.User) -> mystats.Detail:
+    if not await get_user(email=user.v2user.email):
         async_session: AsyncSession = await get_session()
         protocol_detail = str(json.dumps(vars(user)))
         async with async_session.__call__() as session:
             async with session.begin():
                 session.add(Users(
-                    email=user.email,
-                    uuid=user.userUuid,
-                    active=True,
-                    protocol="vmess",
+                    email=user.v2user.email,
+                    uuid=user.v2user.userUuid,
+                    active=user.active,
+                    protocol=user.protocol,
+                    traffic=user.traffic,
+                    expire=user.expireDate,
                     protocol_detail=protocol_detail
                 ))
         return mystats.Detail(flag=True, status="user added in db")

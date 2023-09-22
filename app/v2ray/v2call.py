@@ -1,28 +1,9 @@
-from v2client import utils
 from v2client import V2RayClient
-from v2client.enum import VMessSecurityTypes, ProxyTypes
 from v2client.v2ray import stats
 from v2client.exceptions import UserNotFound, UserAlreadyExists
 from app.singlton import Singleton
 from app.readconfig import get_config
-from app.utils import stats as myutils
-
-
-class VMessUser:
-    def __init__(
-            self,
-            email: str,
-            inbound_tag: str = get_config()["v2rayapi"]["inbound_tag"],
-            level: int = 0,
-            security: VMessSecurityTypes = VMessSecurityTypes.AUTO,
-            uuid: str = utils.random_uuid()
-    ):
-        self.inbound_tag = inbound_tag
-        self.email = email
-        self.level = level
-        self.security = security
-        self.proxyType = ProxyTypes.VMESS
-        self.userUuid = uuid
+from app.utils import stats as mystats
 
 
 def query_response_user_to_obj(query_list_response: stats.QueryListResponse):
@@ -70,7 +51,7 @@ class V2Fly(V2Ray):
     def __v2ray_connect(host: str, port: int):
         return V2RayClient(host, port)
 
-    def v2_add_vmess_user(self, vmess_user: VMessUser) -> myutils.Detail:
+    def v2_add_vmess_user(self, vmess_user: mystats.VMessUser) -> mystats.Detail:
         try:
             self.client.add_user(
                 inbound_tag=vmess_user.inbound_tag,
@@ -80,23 +61,23 @@ class V2Fly(V2Ray):
                 security=vmess_user.security,
                 user_id=vmess_user.userUuid
             )
-            return myutils.Detail(flag=True, status="user added in v2ray")
+            return mystats.Detail(flag=True, status="user added in v2ray")
         except UserAlreadyExists:
-            return myutils.Detail(flag=False, status="user already exists")
+            return mystats.Detail(flag=False, status="user already exists")
 
-    def v2_remove_user(self, email: str, inbound_tag: str = get_config()["v2rayapi"]["inbound_tag"]) -> myutils.Detail:
+    def v2_remove_user(self, email: str, inbound_tag: str = get_config()["v2rayapi"]["inbound_tag"]) -> mystats.Detail:
         try:
             self.client.remove_user(inbound_tag=inbound_tag, email=email)
-            return myutils.Detail(flag=True, status="user removed is v2ray")
+            return mystats.Detail(flag=True, status="user removed is v2ray")
         except UserNotFound:
-            return myutils.Detail(flag=False, status="user not found")
+            return mystats.Detail(flag=False, status="user not found")
 
-    def v2_user_usage(self, email: str, reset: bool) -> myutils.Detail:
+    def v2_user_usage(self, email: str, reset: bool) -> mystats.Detail:
         try:
             user = self.client.get_user_usage(email=email, reset=reset)
-            return myutils.Detail(flag=True, status=user)
+            return mystats.Detail(flag=True, status=user)
         except UserNotFound:
-            return myutils.Detail(flag=False, status="user usage not found. maybe up and down link is empty")
+            return mystats.Detail(flag=False, status="user usage not found. maybe up and down link is empty")
 
     def v2_users_usage(self, pattern: str = "", reset: bool = False) -> stats.QueryListResponse:
         return self.client.query_stats(pattern=pattern, reset=reset)

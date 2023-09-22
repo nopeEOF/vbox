@@ -4,7 +4,8 @@ from app.v2ray import v2call
 from app.readconfig import get_config
 from app.db import dbmanager
 from typing import List
-from app.db.tables import Users
+from app.db import tables
+from app.utils import stats as mystats
 
 myv2client = v2call.MyV2RayClient(client=get_config()["v2rayapi"]["v2ray_engine"])
 v2ray = myv2client.connect(
@@ -12,7 +13,7 @@ v2ray = myv2client.connect(
 )
 
 
-def check_user_traffic_usage(user: Users) -> bool:
+def check_user_traffic_usage(user: tables.Users) -> bool:
     if user.traffic == -1:
         return True
     if user.upload + user.download <= user.traffic:
@@ -21,7 +22,7 @@ def check_user_traffic_usage(user: Users) -> bool:
         return False
 
 
-def check_user_datetime(user: Users) -> bool:
+def check_user_datetime(user: tables.Users) -> bool:
     if datetime.datetime.utcnow() <= user.expire:
         return True
     else:
@@ -35,8 +36,8 @@ def create_list_users_usage_update(data: dict) -> List[dict]:
     return ls
 
 
-async def add_vmess_user(user: v2call.VMessUser):
-    v2_flag = v2ray.v2_add_vmess_user(vmess_user=user)
+async def add_vmess_user(user: mystats.User):
+    v2_flag = v2ray.v2_add_vmess_user(vmess_user=user.v2user)
     if v2_flag.flag:
         db_flag = await dbmanager.db_add_vmess_user(user=user)
         print(db_flag.status)
@@ -69,7 +70,7 @@ async def active_user(email: str):
     if db_flag.flag:
         if db_flag.status.protocol == "vmess":
             protocol_detail = json.loads(db_flag.status.protocol_detail)
-            user_obj = v2call.VMessUser(
+            user_obj = mystats.VMessUser(
                 email=db_flag.status.email,
                 level=protocol_detail["level"],
                 inbound_tag=protocol_detail["inbound_tag"],
@@ -136,14 +137,21 @@ async def read_users_db_add_v2ray():
             if user.active:
                 if user.protocol == "vmess":
                     protocol_detail = json.loads(user.protocol_detail)
-                    user_obj = v2call.VMessUser(
+                    v2user = mystats.VMessUser(
                         email=user.email,
                         level=protocol_detail["level"],
                         inbound_tag=protocol_detail["inbound_tag"],
                         security=protocol_detail["security"],
                         uuid=user.uuid
                     )
-                    await add_vmess_user(user=user_obj)
+                    user = mystats.User(
+                        expireDate=user.expire,
+                        traffic=user.traffic,
+                        active=user.active,
+                        protocol=user.protocol,
+                        v2user=v2user
+                    )
+                    await add_vmess_user(user=user)
                 elif user.protocol == "vless":
                     pass
                 elif user.protocol == "trojan":
