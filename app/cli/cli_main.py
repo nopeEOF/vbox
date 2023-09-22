@@ -47,10 +47,10 @@ async def add_vmess_user(
             help="Security",
             case_sensitive=False
         ),
-        expire_date: datetime.datetime = typer.Option(
+        expire_days: int = typer.Option(
             ...,
             "-ed",
-            "--expire-date",
+            "--expire-days",
             help="set expire date from days"
         ),
         active: Optional[bool] = typer.Option(
@@ -66,6 +66,8 @@ async def add_vmess_user(
             help="set traffic usage allowed. use GIGByte"
         )
 ):
+    now = datetime.datetime.utcnow()
+    expire_date = now + datetime.timedelta(days=+expire_days)
     traffic = traffic * (1024 ** 3)
     v2user = mystats.VMessUser(email=email, security=security, level=level, uuid=uuid)
     user = mystats.User(expireDate=expire_date, active=active, traffic=traffic, v2user=v2user, protocol="vmess")
