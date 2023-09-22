@@ -3,6 +3,8 @@ venv
 db.sqlit
 *.sqlite
 *.db
+*/__pycache__/
+__pycache__
 # Created by https://www.toptal.com/developers/gitignore/api/pycharm,venv,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=pycharm,venv,python
 
