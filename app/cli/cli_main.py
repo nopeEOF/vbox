@@ -161,7 +161,7 @@ async def all_user(
             })
 
             config = "vmess://" + base64.b64encode(j.encode('ascii')).decode('ascii')
-            print(f"user: {user.email}\nuuid: {user.uuid}\nexpire:{expire}\ntraffic: {traffic}")
+            print(f"user: {user.email}\nuuid: {user.uuid}\nexpire: {expire}\ntraffic: {traffic}")
             if link:
                 print(config)
             print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G".format(
