@@ -151,7 +151,7 @@ async def read_users_db_add_v2ray():
                         protocol=user.protocol,
                         v2user=v2user
                     )
-                    await add_vmess_user(user=user)
+                    await v2ray.v2_add_vmess_user(user=user)
                 elif user.protocol == "vless":
                     pass
                 elif user.protocol == "trojan":
