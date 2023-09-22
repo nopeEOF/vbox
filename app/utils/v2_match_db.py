@@ -92,13 +92,7 @@ async def remove_user(email: str):
         print(db_flag.status)
 
 
-def update_usage():
-    # get all users usage from V2Ray
-    v2_users = v2ray.v2_users_usage(pattern="")
-    print(v2_users)
-
-
-async def user_usage(email: str):
+async def update_user_usage(email: str):
     # get user usage from V2Ray
     v2_flag = v2ray.v2_user_usage(email=email, reset=True)
     # update user usage in database
@@ -114,7 +108,7 @@ async def user_usage(email: str):
         print(v2_flag.status)
 
 
-async def users_usage():
+async def update_users_usage():
     v2_users_usage = v2ray.v2_users_usage(pattern="user", reset=True)
     users_dict = v2call.query_response_user_to_obj(v2_users_usage)
 
@@ -143,13 +137,6 @@ async def read_users_db_add_v2ray():
                         inbound_tag=protocol_detail["inbound_tag"],
                         security=protocol_detail["security"],
                         uuid=user.uuid
-                    )
-                    user = mystats.User(
-                        expireDate=user.expire,
-                        traffic=user.traffic,
-                        active=user.active,
-                        protocol=user.protocol,
-                        v2user=v2user
                     )
                     v2ray.v2_add_vmess_user(vmess_user=v2user)
                 elif user.protocol == "vless":
@@ -180,3 +167,7 @@ async def set_user_usage(email: str,  download: int = 0, upload: int = 0, traffi
         print(db_flag.status)
     else:
         print(db_flag.status)
+
+
+async def list_users():
+    return await dbmanager.get_all_users()

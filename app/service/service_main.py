@@ -15,6 +15,6 @@ class Service:
         if first_run:
             await self.first_run()
         while True:
-            await v2_match_db.users_usage()
+            await v2_match_db.update_users_usage()
             await v2_match_db.check_activity_users()
             await asyncio.sleep(self.refreshTime)

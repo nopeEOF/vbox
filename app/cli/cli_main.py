@@ -20,7 +20,7 @@ class VMessSecurityTypes(str, Enum):
     NONE = "NONE"
 
 
-@cli_app.command(help='')
+@cli_app.command(help="add vmess user")
 async def add_vmess_user(
         email: str = typer.Option(
             ...,
@@ -74,7 +74,7 @@ async def add_vmess_user(
     await v2_match_db.add_vmess_user(user=user)
 
 
-@cli_app.command(help='')
+@cli_app.command(help="get user usage")
 async def user_usage(
         email: str = typer.Option(
             ...,
@@ -83,7 +83,7 @@ async def user_usage(
             help=""
         )
 ):
-    db_flag = await v2_match_db.user_usage(email=email)
+    db_flag = await v2_match_db.update_user_usage(email=email)
     if db_flag:
         if db_flag.flag:
             print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G".format(
@@ -93,7 +93,7 @@ async def user_usage(
             print(db_flag.status)
 
 
-@cli_app.command(help="")
+@cli_app.command(help="delete user from db and v2ray")
 async def delete_user(
         email: str = typer.Option(
             ...,
@@ -105,7 +105,7 @@ async def delete_user(
     await v2_match_db.remove_user(email=email)
 
 
-@cli_app.command(help="")
+@cli_app.command(help="set user usage or reset traffic")
 async def set_user_usage(
         email: str = typer.Option(
             ...,
@@ -133,3 +133,17 @@ async def set_user_usage(
         ),
 ):
     await v2_match_db.set_user_usage(email=email, upload=upload, download=download, traffic=traffic)
+
+
+@cli_app.command(help="get all user list and usage")
+async def all_user():
+    users = await v2_match_db.list_users()
+    if users.flag:
+        for user in users.status:
+            print(f"user: {user.email}")
+            print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G".format(
+                user.download / 1024 ** 3, user.upload / 1024 ** 3)
+            )
+            print("-" * 20)
+    else:
+        print(users.status)
