@@ -158,10 +158,10 @@ async def all_user(
                 "host": domain, "path": "/ws", "tls": "tls"
             })
 
-            link = "vmess://" + base64.b64encode(j.encode('ascii')).decode('ascii')
+            config = "vmess://" + base64.b64encode(j.encode('ascii')).decode('ascii')
             print(f"user: {user.email}\nuuid: {user.uuid}")
             if link:
-                print(f"link: {link}")
+                print(f"link: {config}")
             print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G".format(
                 user.download / 1024 ** 3, user.upload / 1024 ** 3)
             )
