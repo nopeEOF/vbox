@@ -1,11 +1,15 @@
 import datetime
+import typer
+import json
+import base64
 from typing import Optional
 from app.v2ray.v2call import MyV2RayClient
 from enum import Enum
 from app.utils import v2_match_db
 from app.utils import stats as mystats
 from app.cli.utyper import UTyper
-import typer
+from rich import print
+from app.readconfig import get_config
 
 cli_app = UTyper()
 v2ray = MyV2RayClient(client="v2fly")
@@ -140,7 +144,15 @@ async def all_user():
     users = await v2_match_db.list_users()
     if users.flag:
         for user in users.status:
-            print(f"user: {user.email}")
+            domain = get_config()["v2rayapi"]["domain"]
+            j = json.dumps({
+                "v": "2", "ps": domain, "add": domain, "port": "443", "id": user.uuid, "aid": "0", "net": "ws",
+                "type": "none",
+                "host": domain, "path": "/ws", "tls": "tls"
+            })
+
+            print("vmess://" + base64.b64encode(j.encode('ascii')).decode('ascii'))
+            print(f"user: {user.email}\nuuid: {user.uuid}")
             print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G".format(
                 user.download / 1024 ** 3, user.upload / 1024 ** 3)
             )

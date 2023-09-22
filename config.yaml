@@ -3,6 +3,7 @@ v2rayapi:
   port: 8080
   inbound_tag: app
   v2ray_engine: v2fly
+  domain: "persiangold.site"
 db: "./db.sqlite"
 service:
   refresh_time: 15
