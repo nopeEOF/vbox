@@ -153,7 +153,10 @@ async def all_user(
         for user in users.status:
             domain = get_config()["v2rayapi"]["domain"]
             expire = user.expire.strftime("%m/%d/%Y, %H:%M")
-            traffic = "{:.3f}".format(user.traffic / 1024 ** 3)
+            if user.traffic == -1:
+                traffic = -1
+            else:
+                traffic = "{:.3f}".format(user.traffic / 1024 ** 3)
             j = json.dumps({
                 "v": "2", "ps": domain, "add": domain, "port": "443", "id": user.uuid, "aid": "0", "net": "ws",
                 "type": "none",
