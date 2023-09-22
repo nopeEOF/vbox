@@ -29,7 +29,7 @@ async def get_session():
 async def db_add_vmess_user(user: mystats.User) -> mystats.Detail:
     if not await get_user(email=user.v2user.email):
         async_session: AsyncSession = await get_session()
-        protocol_detail = str(json.dumps(vars(user)))
+        protocol_detail = str(json.dumps(vars(user.v2user)))
         async with async_session.__call__() as session:
             async with session.begin():
                 session.add(Users(
