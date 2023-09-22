@@ -140,7 +140,14 @@ async def set_user_usage(
 
 
 @cli_app.command(help="get all user list and usage")
-async def all_user():
+async def all_user(
+        link: Optional[bool] = typer.Option(
+            False,
+            "-l"
+            "--link",
+            help="get vmess user link"
+        )
+):
     users = await v2_match_db.list_users()
     if users.flag:
         for user in users.status:
@@ -152,7 +159,9 @@ async def all_user():
             })
 
             link = "vmess://" + base64.b64encode(j.encode('ascii')).decode('ascii')
-            print(f"user: {user.email}\nuuid: {user.uuid}\nlink: {link}")
+            print(f"user: {user.email}\nuuid: {user.uuid}")
+            if link:
+                print(f"link: {link}")
             print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G".format(
                 user.download / 1024 ** 3, user.upload / 1024 ** 3)
             )
