@@ -152,6 +152,8 @@ async def all_user(
     if users.flag:
         for user in users.status:
             domain = get_config()["v2rayapi"]["domain"]
+            expire = user.expire.strftime("%m/%d/%Y, %H:%M")
+            traffic = "{:.3f}".format(user.traffic / 1024 ** 3)
             j = json.dumps({
                 "v": "2", "ps": domain, "add": domain, "port": "443", "id": user.uuid, "aid": "0", "net": "ws",
                 "type": "none",
@@ -159,9 +161,9 @@ async def all_user(
             })
 
             config = "vmess://" + base64.b64encode(j.encode('ascii')).decode('ascii')
-            print(f"user: {user.email}\nuuid: {user.uuid}")
+            print(f"user: {user.email}\nuuid: {user.uuid}\nexpire:{expire}\ntraffic: {traffic}")
             if link:
-                print(f"link: {config}")
+                print(config)
             print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G".format(
                 user.download / 1024 ** 3, user.upload / 1024 ** 3)
             )
