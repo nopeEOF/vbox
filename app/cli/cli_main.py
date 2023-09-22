@@ -59,7 +59,7 @@ async def add_vmess_user(
             "--active",
             help="active user"
         ),
-        traffic: int = typer.Option(
+        traffic: float = typer.Option(
             ...,
             "-t",
             "--traffic",
