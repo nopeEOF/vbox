@@ -143,7 +143,7 @@ async def set_user_usage(
 async def all_user(
         link: Optional[bool] = typer.Option(
             False,
-            "-l"
+            "-l",
             "--link",
             help="get vmess user link"
         )
