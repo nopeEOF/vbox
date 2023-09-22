@@ -136,6 +136,7 @@ async def set_user_usage(
             help=""
         ),
 ):
+    traffic = traffic * (1024 ** 3)
     await v2_match_db.set_user_usage(email=email, upload=upload, download=download, traffic=traffic)
 
 
