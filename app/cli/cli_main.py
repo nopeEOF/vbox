@@ -133,7 +133,7 @@ async def set_user_usage(
             help=""
         ),
         traffic: Optional[int] = typer.Option(
-            0,
+            None,
             "--traffic",
             "-t",
             help=""
