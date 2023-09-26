@@ -121,13 +121,13 @@ async def set_user_usage(
             help=""
         ),
         upload: Optional[int] = typer.Option(
-            0,
+            None,
             "--upload",
             "-u",
             help=""
         ),
         download: Optional[int] = typer.Option(
-            0,
+            None,
             "--download",
             "-d",
             help=""
@@ -138,9 +138,17 @@ async def set_user_usage(
             "-t",
             help=""
         ),
+        expire_days: Optional[int] = typer.Option(
+            None,
+            "-ed",
+            "--expire-days",
+            help="set expire date from days"
+        )
 ):
+    now = datetime.datetime.utcnow()
+    expire_date = now + datetime.timedelta(days=+expire_days)
     traffic = traffic * (1024 ** 3)
-    await v2_match_db.set_user_usage(email=email, upload=upload, download=download, traffic=traffic)
+    await v2_match_db.set_user_usage(email=email, upload=upload, download=download, traffic=traffic, expire=expire_date)
 
 
 @cli_app.command(help="get all user list and usage")

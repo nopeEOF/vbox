@@ -1,3 +1,4 @@
+import datetime
 import json
 from app.utils.stats import UsersUsage
 from app.db import database
@@ -124,16 +125,19 @@ async def db_update_user_usage(email: str, download: int, upload: int) -> mystat
         return mystats.Detail(flag=False, status="user not found in db")
 
 
-async def db_set_user_usage(email: str, upload: int = 0, download: int = 0, traffic: int = 0):
+async def db_set_user_usage(expire: datetime.datetime, email: str, upload: int, download: int, traffic: int):
     if user := await get_user(email=email):
         async_session: AsyncSession = await get_session()
         async with async_session.__call__() as session:
-            query = update(Users).values(
-                {
+            original = {
                     "download": download,
                     "upload": upload,
-                    "traffic": traffic
+                    "traffic": traffic,
+                    "expire": expire
                 }
+            filtered = {k: v for k, v in original.items() if v is not None}
+            query = update(Users).values(
+                filtered
             ).where(Users.email == user.email)
             await session.execute(query)
             await session.commit()

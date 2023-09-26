@@ -161,8 +161,10 @@ async def check_activity_users():
                     print("checking active user")
 
 
-async def set_user_usage(email: str,  download: int = 0, upload: int = 0, traffic: int = 0):
-    db_flag = await dbmanager.db_set_user_usage(email=email, upload=upload, download=download, traffic=traffic)
+async def set_user_usage(expire: datetime.datetime, email: str,  download: int, upload: int, traffic: int):
+    db_flag = await dbmanager.db_set_user_usage(
+        email=email, upload=upload, download=download, traffic=traffic, expire=expire
+    )
     if db_flag.flag:
         print(db_flag.status)
     else:
