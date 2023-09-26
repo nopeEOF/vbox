@@ -136,12 +136,13 @@ async def db_set_user_usage(expire: datetime.datetime, email: str, upload: int, 
                     "expire": expire
                 }
             filtered = {k: v for k, v in original.items() if v is not None}
-            query = update(Users).values(
-                filtered
-            ).where(Users.email == user.email)
-            await session.execute(query)
-            await session.commit()
-            return mystats.Detail(flag=True, status="traffic success set")
+            if filtered:
+                query = update(Users).values(
+                    filtered
+                ).where(Users.email == user.email)
+                await session.execute(query)
+                await session.commit()
+                return mystats.Detail(flag=True, status="traffic success set")
     else:
         return mystats.Detail(flag=False, status="user not found in db")
 
