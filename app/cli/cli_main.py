@@ -145,9 +145,13 @@ async def set_user_usage(
             help="set expire date from days"
         )
 ):
-    now = datetime.datetime.utcnow()
-    expire_date = now + datetime.timedelta(days=+expire_days)
-    traffic = traffic * (1024 ** 3)
+    if expire_days:
+        now = datetime.datetime.utcnow()
+        expire_date = now + datetime.timedelta(days=+expire_days)
+    else:
+        expire_date = None
+    if traffic:
+        traffic = traffic * (1024 ** 3)
     await v2_match_db.set_user_usage(email=email, upload=upload, download=download, traffic=traffic, expire=expire_date)
 
 
