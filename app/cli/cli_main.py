@@ -161,7 +161,7 @@ async def all_user(
                 traffic = "{:.3f}".format(user.traffic / 1024 ** 3)
             j = json.dumps({
                 "v": "2", "ps": user.email, "add": domain, "port": "443", "id": user.uuid, "aid": "0", "net": "ws",
-                "type": "", "scy": user.protocol_detail["security"],
+                "type": "", "scy": json.loads(user.protocol_detail)["security"],
                 "host": domain, "path": "/ws", "tls": "tls", "sni": domain
             })
 
