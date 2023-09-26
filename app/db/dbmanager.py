@@ -143,6 +143,8 @@ async def db_set_user_usage(expire: datetime.datetime, email: str, upload: int, 
                 await session.execute(query)
                 await session.commit()
                 return mystats.Detail(flag=True, status="traffic success set")
+            else:
+                return mystats.Detail(flag=False, status="query is empty")
     else:
         return mystats.Detail(flag=False, status="user not found in db")
 
