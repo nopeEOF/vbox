@@ -91,8 +91,10 @@ async def user_usage(
     db_flag = await v2_match_db.update_user_usage(email=email)
     if db_flag:
         if db_flag.flag:
-            print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G".format(
-                db_flag.status.download / 1024 ** 3, db_flag.status.upload / 1024 ** 3)
+            upload = db_flag.status.upload / 1024 ** 3
+            download = db_flag.status.download / 1024 ** 3
+            print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G, Total: {2:.3f}".format(
+                download, upload, download + upload)
             )
         else:
             print(db_flag.status)
@@ -169,8 +171,10 @@ async def all_user(
             print(f"user: {user.email}\nuuid: {user.uuid}\nexpire: {expire}\ntraffic: {traffic}")
             if link:
                 print(config)
-            print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G".format(
-                user.download / 1024 ** 3, user.upload / 1024 ** 3)
+            upload = user.upload / 1024 ** 3
+            download = user.download / 1024 ** 3
+            print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G, Total: {2:.3f}".format(
+                download, upload, download + upload)
             )
             print("-" * 20)
     else:
