@@ -10,6 +10,7 @@ from app.utils import stats as mystats
 from app.cli.utyper import UTyper
 from rich import print
 from app.readconfig import get_config
+from v2client import utils
 
 cli_app = UTyper()
 v2ray = MyV2RayClient(client="v2fly")
@@ -33,7 +34,7 @@ async def add_vmess_user(
             help="Email address"
         ),
         uuid: Optional[str] = typer.Option(
-            None,
+            utils.random_uuid(),
             "-u",
             "--uuid",
             help="uuid"
