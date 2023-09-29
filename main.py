@@ -1,7 +1,7 @@
 from typing import Optional
-from app.cli.cli_main import cli_app
-from app.cli.utyper import UTyper
-from app.service.service_main import Service
+from myapp.cli.cli_main import cli_app
+from myapp.cli.utyper import UTyper
+from myapp.service.service_main import Service
 import typer
 
 

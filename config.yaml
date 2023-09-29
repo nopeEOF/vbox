@@ -1,7 +1,7 @@
 v2rayapi:
   host: "127.0.0.1"
   port: 8080
-  inbound_tag: app
+  inbound_tag: myapp
   v2ray_engine: v2fly
   domain: "persiangold.site"
 db: "./db.sqlite"
