@@ -2,7 +2,7 @@ import datetime
 from dataclasses import dataclass
 from v2client.enum import VMessSecurityTypes, ProxyTypes
 from v2client import utils
-from app.readconfig import get_config
+from myapp.readconfig import get_config
 
 
 class VMessUser:

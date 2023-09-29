@@ -1,11 +1,11 @@
 import json
 import datetime
-from app.v2ray import v2call
-from app.readconfig import get_config
-from app.db import dbmanager
+from myapp.v2ray import v2call
+from myapp.readconfig import get_config
+from myapp.db import dbmanager
 from typing import List
-from app.db import tables
-from app.utils import stats as mystats
+from myapp.db import tables
+from myapp.utils import stats as mystats
 
 myv2client = v2call.MyV2RayClient(client=get_config()["v2rayapi"]["v2ray_engine"])
 v2ray = myv2client.connect(

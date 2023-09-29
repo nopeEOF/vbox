@@ -3,13 +3,13 @@ import typer
 import json
 import base64
 from typing import Optional
-from app.v2ray.v2call import MyV2RayClient
+from myapp.v2ray.v2call import MyV2RayClient
 from enum import Enum
-from app.utils import v2_match_db
-from app.utils import stats as mystats
-from app.cli.utyper import UTyper
+from myapp.utils import v2_match_db
+from myapp.utils import stats as mystats
+from myapp.cli.utyper import UTyper
 from rich import print
-from app.readconfig import get_config
+from myapp.readconfig import get_config
 from v2client import utils
 
 cli_app = UTyper()

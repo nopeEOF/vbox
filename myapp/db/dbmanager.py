@@ -1,13 +1,13 @@
 import datetime
 import json
-from app.utils.stats import UsersUsage
-from app.db import database
+from myapp.utils.stats import UsersUsage
+from myapp.db import database
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.tables import Users
+from myapp.db.tables import Users
 from collections.abc import AsyncIterator
 from sqlalchemy import select, update
 from v2client.v2ray import stats
-from app.utils import stats as mystats
+from myapp.utils import stats as mystats
 from typing import List
 
 

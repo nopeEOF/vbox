@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from app.db.tables import Base
+from myapp.db.tables import Base
 from collections.abc import AsyncIterator
-from app import readconfig
+from myapp import readconfig
 
 
 async def async_engine():

@@ -1,6 +1,6 @@
 import asyncio
-from app.utils import v2_match_db
-from app.readconfig import get_config
+from myapp.utils import v2_match_db
+from myapp.readconfig import get_config
 
 
 class Service:

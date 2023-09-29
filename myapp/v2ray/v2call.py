@@ -1,9 +1,9 @@
 from v2client import V2RayClient
 from v2client.v2ray import stats
 from v2client.exceptions import UserNotFound, UserAlreadyExists
-from app.singlton import Singleton
-from app.readconfig import get_config
-from app.utils import stats as mystats
+from myapp.singlton import Singleton
+from myapp.readconfig import get_config
+from myapp.utils import stats as mystats
 
 
 def query_response_user_to_obj(query_list_response: stats.QueryListResponse):
