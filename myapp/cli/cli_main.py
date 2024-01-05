@@ -93,7 +93,7 @@ async def user_usage(
         if db_flag.flag:
             upload = db_flag.status.upload / 1024 ** 3
             download = db_flag.status.download / 1024 ** 3
-            print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G, Total: {2:.3f}, Active: {4}".format(
+            print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G, Total: {2:.3f}, Active: {3}".format(
                 download, upload, download + upload, db_flag.status.active)
             )
         else:
