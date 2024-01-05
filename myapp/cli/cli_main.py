@@ -64,7 +64,7 @@ async def add_vmess_user(
             "--active",
             help="active user"
         ),
-        traffic: float = typer.Option(
+        traffic: int = typer.Option(
             ...,
             "-t",
             "--traffic",
@@ -93,8 +93,8 @@ async def user_usage(
         if db_flag.flag:
             upload = db_flag.status.upload / 1024 ** 3
             download = db_flag.status.download / 1024 ** 3
-            print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G, Total: {2:.3f}".format(
-                download, upload, download + upload)
+            print("Download Usage: {0:.3f} G & Upload Usage: {1:.3f} G, Total: {2:.3f}, Active: {}".format(
+                download, upload, download + upload, db_flag.status.active)
             )
         else:
             print(db_flag.status)
@@ -180,7 +180,7 @@ async def all_user(
             })
 
             config = "vmess://" + base64.b64encode(j.encode('ascii')).decode('ascii')
-            print(f"user: {user.email}\nuuid: {user.uuid}\nexpire: {expire}\ntraffic: {traffic}")
+            print(f"user: {user.email}\nuuid: {user.uuid}\nactive: {user.active}\nexpire: {expire}\ntraffic: {traffic}")
             if link:
                 print(config)
             upload = user.upload / 1024 ** 3
