@@ -61,9 +61,24 @@ class V2Fly(V2Ray):
                 security=vmess_user.security,
                 user_id=vmess_user.userUuid
             )
-            return mystats.Detail(flag=True, status="user added in v2ray")
+            return mystats.Detail(flag=True, status="vmess user added in v2ray")
         except UserAlreadyExists:
-            return mystats.Detail(flag=False, status="user already exists")
+            return mystats.Detail(flag=False, status="vmess user already exists")
+
+    def v2_add_vless_user(self, vless_user: mystats.VLessUser) -> mystats.Detail:
+        try:
+            self.client.add_user(
+                inbound_tag=vless_user.inbound_tag,
+                proxy_type=vless_user.proxyType,
+                email=vless_user.email,
+                level=vless_user.level,
+                flow=vless_user.flow,
+                encryption=vless_user.encryption,
+                user_id=vless_user.userUuid
+            )
+            return mystats.Detail(flag=True, status="vless user added in v2ray")
+        except UserAlreadyExists:
+            return mystats.Detail(flag=False, status="vless user already exists")
 
     def v2_remove_user(self, email: str, inbound_tag: str = get_config()["v2rayapi"]["inbound_tag"]) -> mystats.Detail:
         try:
