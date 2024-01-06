@@ -12,7 +12,7 @@ class VLessUser:
             inbound_tag: str = get_config()["v2rayapi"]["inbound_tag"],
             level: int = 0,
             uuid: str = utils.random_uuid()
-        ) -> None:
+    ) -> None:
         self.inbound_tag = inbound_tag
         self.email = email
         self.level = level
@@ -42,8 +42,8 @@ class VMessUser:
 @dataclass
 class UsersUsage:
     email: str
-    upload: int
-    download: int
+    upload: float
+    download: float
 
 
 @dataclass

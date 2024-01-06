@@ -73,7 +73,8 @@ async def add_vmess_user(
 ):
     now = datetime.datetime.utcnow()
     expire_date = now + datetime.timedelta(days=+expire_days)
-    traffic = traffic * (1024 ** 3)
+    if not traffic == -1:
+        traffic = traffic * (1024 ** 3)
     v2user = mystats.VMessUser(email=email, security=security, level=level, uuid=uuid)
     user = mystats.User(expireDate=expire_date, active=active, traffic=traffic, v2user=v2user, protocol="vmess")
     await v2_match_db.add_vmess_user(user=user)
