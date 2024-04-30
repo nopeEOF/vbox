@@ -1,5 +1,5 @@
 typer[all]
-git+https://github.com/mr-kafa/v2client.git
+git+https://github.com/nopeEOF/v2client.git
 PyYAML~=6.0.1
 SQLAlchemy~=2.0.20
 aiosqlite
